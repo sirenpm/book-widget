@@ -51,6 +51,25 @@
 </head>
 <body>
     <script>
+        function sendToFirebot(data) {
+            // Create hidden form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'http://localhost:7474/api/v1/variables';
+            
+            // Add book data
+            const dataField = document.createElement('input');
+            dataField.type = 'hidden';
+            dataField.name = 'bookData';
+            dataField.value = JSON.stringify(data);
+            form.appendChild(dataField);
+            
+            // Submit form
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const title = urlParams.get('title');
         
@@ -74,24 +93,23 @@
                 .then(data => {
                     if (data.items && data.items.length > 0) {
                         const book = data.items[0].volumeInfo;
-                        document.getElementById('title').textContent = book.title;
-                        document.getElementById('author').textContent = book.authors?.[0] || 'Unknown Author';
-                        document.getElementById('genre').textContent = book.categories?.[0] || 'Genre not available';
-                        document.getElementById('summary').textContent = book.description ? 
-                            book.description.substring(0, 150) + '...' : 'No summary available';
+                        const bookData = {
+                            title: book.title,
+                            author: book.authors?.[0] || 'Unknown Author',
+                            genre: book.categories?.[0] || 'Genre not available',
+                            summary: book.description ? book.description.substring(0, 150) + '...' : 'No summary available'
+                        };
+
+                        // Update display
+                        document.getElementById('title').textContent = bookData.title;
+                        document.getElementById('author').textContent = bookData.author;
+                        document.getElementById('genre').textContent = bookData.genre;
+                        document.getElementById('summary').textContent = bookData.summary;
                         document.getElementById('rating').textContent = `⭐ ${book.averageRating || 'N/A'}/5`;
                         document.getElementById('cover').src = book.imageLinks?.thumbnail || '';
                         
-                        // Send book details to parent window for Firebot
-                        window.parent.postMessage({
-                            type: 'bookDetails',
-                            data: {
-                                title: book.title,
-                                author: book.authors?.[0] || 'Unknown Author',
-                                genre: book.categories?.[0] || 'Genre not available',
-                                summary: book.description ? book.description.substring(0, 150) + '...' : 'No summary available'
-                            }
-                        }, '*');
+                        // Send to Firebot
+                        sendToFirebot(bookData);
                         
                         setTimeout(() => {
                             document.body.innerHTML = '';
@@ -102,3 +120,4 @@
     </script>
 </body>
 </html>
+
