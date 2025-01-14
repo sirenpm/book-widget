@@ -18,7 +18,7 @@
             max-width: 500px;
             opacity: 0;
             transform: translateX(100px);
-            animation: slideIn 0.5s forwards;
+            animation: slideIn 0.5s forwards, fadeOut 1s ease 14s forwards;
         }
         .book-cover {
             width: 150px;
@@ -45,6 +45,11 @@
             to {
                 opacity: 1;
                 transform: translateX(0);
+            }
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
             }
         }
     </style>
@@ -105,10 +110,6 @@
                         
                         // Send to Firebot
                         sendToFirebot(bookData);
-                        
-                        setTimeout(() => {
-                            document.body.innerHTML = '';
-                        }, 15 * 1000);  // 15 seconds in milliseconds
                     }
                 });
         }
