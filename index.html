@@ -52,19 +52,16 @@
 <body>
     <script>
         function sendToFirebot(data) {
-            // Create hidden form
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = 'http://localhost:7474/api/v1/variables';
             
-            // Add book data
             const dataField = document.createElement('input');
             dataField.type = 'hidden';
             dataField.name = 'bookData';
             dataField.value = JSON.stringify(data);
             form.appendChild(dataField);
             
-            // Submit form
             document.body.appendChild(form);
             form.submit();
             document.body.removeChild(form);
@@ -82,7 +79,6 @@
                     <h1 id="title"></h1>
                     <h2 id="author"></h2>
                     <p id="genre"></p>
-                    <p id="summary"></p>
                     <div class="rating" id="rating"></div>
                 </div>
             `;
@@ -104,7 +100,6 @@
                         document.getElementById('title').textContent = bookData.title;
                         document.getElementById('author').textContent = bookData.author;
                         document.getElementById('genre').textContent = bookData.genre;
-                        document.getElementById('summary').textContent = bookData.summary;
                         document.getElementById('rating').textContent = `⭐ ${book.averageRating || 'N/A'}/5`;
                         document.getElementById('cover').src = book.imageLinks?.thumbnail || '';
                         
@@ -120,4 +115,3 @@
     </script>
 </body>
 </html>
-
