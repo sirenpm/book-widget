@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: transparent;
+        }
+        .book-display {
+            background: rgba(0,0,0,0.85);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            gap: 20px;
+            max-width: 500px;
+            opacity: 0;
+            transform: translateX(100px);
+            animation: slideIn 0.5s forwards;
+        }
+        .book-cover {
+            width: 150px;
+            height: auto;
+            border-radius: 5px;
+        }
+        .book-info h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        .book-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #ccc;
+        }
+        .rating {
+            color: gold;
+        }
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const title = urlParams.get('title');
+        
+        if (title) {
+            const bookDisplay = document.createElement('div');
+            bookDisplay.className = 'book-display';
+            bookDisplay.innerHTML = `
+                <img class="book-cover" id="cover" src="" alt="Book cover">
+                <div class="book-info">
+                    <h1 id="title"></h1>
+                    <h2 id="author"></h2>
+                    <div class="rating" id="rating"></div>
+                </div>
+            `;
+            document.body.appendChild(bookDisplay);
+
+            fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.items && data.items.length > 0) {
+                        const book = data.items[0].volumeInfo;
+                        document.getElementById('title').textContent = book.title;
+                        document.getElementById('author').textContent = book.authors?.[0] || 'Unknown Author';
+                        document.getElementById('rating').textContent = `⭐ ${book.averageRating || 'N/A'}/5`;
+                        document.getElementById('cover').src = book.imageLinks?.thumbnail || '';
+                        
+                        setTimeout(() => {
+                            document.body.innerHTML = '';
+                        }, 8000);
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
